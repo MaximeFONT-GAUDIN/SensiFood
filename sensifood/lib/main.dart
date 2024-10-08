@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'home_page.dart';
+import 'connect_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -10,11 +10,12 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'SensFood App',
+      debugShowCheckedModeBanner: false,
+      title: 'SensiFood App',
       theme: ThemeData(
         primarySwatch: Colors.green,
       ),
-      home: HomePage(),
+      home: const ConnectPage(),
     );
   }
 }

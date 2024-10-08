@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'home_page.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -11,6 +13,16 @@ class _LoginScreenState extends State<LoginScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
+
+  // Fonction pour vérifier les informations de l'utilisateur
+  Future<bool> _checkLogin(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedEmail = prefs.getString('email');
+    final savedPassword = prefs.getString('password');
+    
+    // Vérifie si les données entrées correspondent à celles enregistrées
+    return (email == savedEmail && password == savedPassword);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +115,11 @@ class _LoginScreenState extends State<LoginScreen> {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Connecté avec succès!')),
                               );
+                              Navigator.pushAndRemoveUntil(
+                                context,
+                                MaterialPageRoute(builder: (context) => const HomePage()),
+                                (Route<dynamic> route) => false,
+                              );
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -133,7 +150,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // Redirection vers la page de connexion
                     Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) => SingupScreen()),
+                    MaterialPageRoute(builder: (context) => const SingupScreen()),
                     (Route<dynamic> route) => route.isFirst,
                     );
                   },
@@ -154,7 +171,6 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-
 class SingupScreen extends StatefulWidget {
   const SingupScreen({super.key});
 
@@ -168,10 +184,19 @@ class _SingupScreenState extends State<SingupScreen> {
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
+   // Fonction pour sauvegarder les données dans le téléphone
+  Future<void> _saveUserData(String email, String password) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('email', email);
+    await prefs.setString('password', password);
+    // Vous pouvez aussi enregistrer le nom si nécessaire
+    await prefs.setString('name', _nameController.text);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF356859), // Couleur de fond verte foncée
+      backgroundColor: const Color(0xFFD9765F), // Couleur de fond
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -215,7 +240,7 @@ class _SingupScreenState extends State<SingupScreen> {
                             style: TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
-                              color: Color(0xFF356859),
+                              color: Color(0xFFD9765F),
                             ),
                           ),
                         ),
@@ -255,7 +280,6 @@ class _SingupScreenState extends State<SingupScreen> {
                         // Champ Nom / Prénom
                         TextFormField(
                           controller: _nameController,
-                          obscureText: true,
                           decoration: const InputDecoration(
                             labelText: 'Prénom et Nom',
                             border: OutlineInputBorder(),
@@ -278,7 +302,7 @@ class _SingupScreenState extends State<SingupScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF37966F), // Couleur du bouton vert clair
+                            backgroundColor: const Color(0xFFD9765F), // Couleur du bouton vert clair
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -305,7 +329,7 @@ class _SingupScreenState extends State<SingupScreen> {
                   onPressed: () {
                     // Redirection vers la page de connexion
                     Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    MaterialPageRoute(builder: (context) => const LoginScreen()),
                     (Route<dynamic> route) => route.isFirst,
                     );
                   },
