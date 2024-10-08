@@ -26,10 +26,10 @@ class HomePage extends StatelessWidget {
                 );
               },
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xFF356859), // Couleur verte foncée pour le bouton
+                backgroundColor: const Color(0xFFD9765F), // Couleur verte foncée pour le bouton
                 padding: const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(3),
+                  borderRadius: BorderRadius.circular(10),
                 ),
               ),
               child: const Text(

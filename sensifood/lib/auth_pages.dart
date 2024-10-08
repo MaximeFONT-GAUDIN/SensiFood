@@ -15,7 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF356859), // Couleur de fond verte foncée
+      backgroundColor: const Color(0xFFD9765F), // Couleur de fond verte foncée
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
@@ -58,7 +58,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           style: TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
-                            color: Color(0xFF356859),
+                            color: Color(0xFFD9765F),
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -106,10 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
                             }
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFF37966F), // Couleur du bouton vert clair
+                            backgroundColor: const Color(0xFFD9765F), // Couleur du bouton vert clair
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           child: const Center(
