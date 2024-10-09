@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:sensifood/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'home_page.dart';
 
@@ -14,15 +15,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _passwordController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-  // Fonction pour vérifier les informations de l'utilisateur
-  Future<bool> _checkLogin(String email, String password) async {
-    final prefs = await SharedPreferences.getInstance();
-    final savedEmail = prefs.getString('email');
-    final savedPassword = prefs.getString('password');
-    
-    // Vérifie si les données entrées correspondent à celles enregistrées
-    return (email == savedEmail && password == savedPassword);
-  }
+  final ApiService _apiService = ApiService();
 
   @override
   Widget build(BuildContext context) {
@@ -105,23 +98,36 @@ class _LoginScreenState extends State<LoginScreen> {
                             return null;
                           },
                         ),
-                        const SizedBox(height: 16),
                         // Champ Nom / Prénom
                         const SizedBox(height: 20),
                         // Bouton Connexion
                         ElevatedButton(
-                          onPressed: () {
+                          onPressed: () async {
                             if (_formKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Connecté avec succès!')),
+                              // Appel à la fonction de connexion via ApiService
+                              String? loginResult = await _apiService.loginUser( context,
+                                _emailController.text,
+                                _passwordController.text,
                               );
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(builder: (context) => const HomePage()),
-                                (Route<dynamic> route) => false,
-                              );
+                              if (loginResult == 'success') {
+                                // Connexion réussie, rediriger vers la page d'accueil
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Connecté avec succès!')),
+                                );
+                                Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(builder: (context) => const HomePage()),
+                                  (Route<dynamic> route) => false,
+                                );
+                              } else {
+                                // Afficher un message d'erreur en cas de problème
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(loginResult ?? 'Erreur de connexion')),
+                                );
+                              }
                             }
                           },
+
                           style: ElevatedButton.styleFrom(
                             backgroundColor: const Color(0xFFD9765F), // Couleur du bouton vert clair
                             padding: const EdgeInsets.symmetric(vertical: 15),
@@ -150,7 +156,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     // Redirection vers la page de connexion
                     Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) => const SingupScreen()),
+                    MaterialPageRoute(builder: (context) => const SignupScreen()),
                     (Route<dynamic> route) => route.isFirst,
                     );
                   },
@@ -171,26 +177,51 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 }
 
-class SingupScreen extends StatefulWidget {
-  const SingupScreen({super.key});
+class SignupScreen extends StatefulWidget {
+  const SignupScreen({super.key});
 
   @override
-  _SingupScreenState createState() => _SingupScreenState();
+  _SignupScreenState createState() => _SignupScreenState();
 }
 
-class _SingupScreenState extends State<SingupScreen> {
+class _SignupScreenState extends State<SignupScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _nameController = TextEditingController();
   final _formKey = GlobalKey<FormState>();
 
-   // Fonction pour sauvegarder les données dans le téléphone
+  final ApiService _apiService = ApiService();
+
+  // Fonction pour sauvegarder les données localement
   Future<void> _saveUserData(String email, String password) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('email', email);
     await prefs.setString('password', password);
-    // Vous pouvez aussi enregistrer le nom si nécessaire
     await prefs.setString('name', _nameController.text);
+  }
+
+  // Fonction pour envoyer le formulaire
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      String responseMessage = await _apiService.registerUser(
+        context,
+        _emailController.text,
+        _passwordController.text,
+        _nameController.text,
+      );
+
+      if (responseMessage == 'success') {
+        await _saveUserData(_emailController.text, _passwordController.text);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Compte créé avec succès!')),
+        );
+      } else {
+        // Afficher l'erreur retournée par l'API
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Erreur: $responseMessage')),
+        );
+      }
+    }
   }
 
   @override
@@ -204,7 +235,6 @@ class _SingupScreenState extends State<SingupScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Titre de l'application
                 const Text(
                   'SensiFood',
                   style: TextStyle(
@@ -214,7 +244,6 @@ class _SingupScreenState extends State<SingupScreen> {
                   ),
                 ),
                 const SizedBox(height: 40),
-                // Conteneur du formulaire avec une bordure arrondie et un fond blanc
                 Container(
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
@@ -233,7 +262,6 @@ class _SingupScreenState extends State<SingupScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        // Titre du formulaire
                         const Center(
                           child: Text(
                             'Créer un compte',
@@ -245,7 +273,6 @@ class _SingupScreenState extends State<SingupScreen> {
                           ),
                         ),
                         const SizedBox(height: 20),
-                        // Champ Adresse mail
                         TextFormField(
                           controller: _emailController,
                           keyboardType: TextInputType.emailAddress,
@@ -261,7 +288,6 @@ class _SingupScreenState extends State<SingupScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Champ Mot de passe
                         TextFormField(
                           controller: _passwordController,
                           obscureText: true,
@@ -277,7 +303,6 @@ class _SingupScreenState extends State<SingupScreen> {
                           },
                         ),
                         const SizedBox(height: 16),
-                        // Champ Nom / Prénom
                         TextFormField(
                           controller: _nameController,
                           decoration: const InputDecoration(
@@ -292,17 +317,10 @@ class _SingupScreenState extends State<SingupScreen> {
                           },
                         ),
                         const SizedBox(height: 20),
-                        // Bouton Connexion
                         ElevatedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(content: Text('Compte créer avec succès!')),
-                              );
-                            }
-                          },
+                          onPressed: _submitForm,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color(0xFFD9765F), // Couleur du bouton vert clair
+                            backgroundColor: const Color(0xFFD9765F),
                             padding: const EdgeInsets.symmetric(vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10),
@@ -324,13 +342,12 @@ class _SingupScreenState extends State<SingupScreen> {
                   ),
                 ),
                 const SizedBox(height: 20),
-                // Lien "Vous n'avez pas de compte ?"
                 TextButton(
                   onPressed: () {
-                    // Redirection vers la page de connexion
-                    Navigator.pushAndRemoveUntil(context,
-                    MaterialPageRoute(builder: (context) => const LoginScreen()),
-                    (Route<dynamic> route) => route.isFirst,
+                    Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(builder: (context) => const LoginScreen()),
+                      (Route<dynamic> route) => false,
                     );
                   },
                   child: const Text(

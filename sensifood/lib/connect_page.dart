@@ -47,7 +47,7 @@ class ConnectPage extends StatelessWidget {
               onPressed: () {
                 // Ajouter l'action pour créer un compte ici
                 Navigator.pushAndRemoveUntil(context,
-                MaterialPageRoute(builder: (context) => const SingupScreen()),
+                MaterialPageRoute(builder: (context) => const SignupScreen()),
                 (Route<dynamic> route) => route.isFirst,
                 );
               },
