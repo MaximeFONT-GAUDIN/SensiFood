@@ -2,7 +2,7 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 
 class MenuScreen extends StatelessWidget {
-  const MenuScreen({Key? key}) : super(key: key);
+  const MenuScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -98,7 +98,7 @@ class MenuScreen extends StatelessWidget {
   List<PieChartSectionData> showingSections() {
     return [
       PieChartSectionData(
-        color: Color(0xFFE0795D),
+        color: const Color(0xFFE0795D),
         value: 40, // Valeur en pourcentage
         title: '40%', // Label
         radius: 50, // Taille de la part
@@ -109,7 +109,7 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       PieChartSectionData(
-        color: Color(0xFFE79B85),
+        color: const Color(0xFFE79B85),
         value: 30,
         title: '30%',
         radius: 50,
@@ -120,7 +120,7 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       PieChartSectionData(
-        color: Color(0xFFEFBCAE),
+        color: const Color(0xFFEFBCAE),
         value: 20,
         title: '20%',
         radius: 50,
@@ -131,7 +131,7 @@ class MenuScreen extends StatelessWidget {
         ),
       ),
       PieChartSectionData(
-        color: Color(0xFFF7DED6),
+        color: const Color(0xFFF7DED6),
         value: 10,
         title: '10%',
         radius: 50,
@@ -146,7 +146,7 @@ class MenuScreen extends StatelessWidget {
 }
 
 class ScannerScreen extends StatelessWidget {
-  const ScannerScreen({Key? key}) : super(key: key);
+  const ScannerScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -157,7 +157,7 @@ class ScannerScreen extends StatelessWidget {
 }
 
 class SuiviScreen extends StatelessWidget {
-  const SuiviScreen({Key? key}) : super(key: key);
+  const SuiviScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +168,7 @@ class SuiviScreen extends StatelessWidget {
 }
 
 class ProfilScreen extends StatelessWidget {
-  const ProfilScreen({Key? key}) : super(key: key);
+  const ProfilScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +179,7 @@ class ProfilScreen extends StatelessWidget {
 }
 
 class PlusScreen extends StatelessWidget {
-  const PlusScreen({Key? key}) : super(key: key);
+  const PlusScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -198,13 +198,13 @@ class Indicator extends StatelessWidget {
   final Color textColor;
 
   const Indicator({
-    Key? key,
+    super.key,
     required this.color,
     required this.text,
     this.isSquare = true,
     this.size = 16,
     this.textColor = const Color(0xff505050),
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
