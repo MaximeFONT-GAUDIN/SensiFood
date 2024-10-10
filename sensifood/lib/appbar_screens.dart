@@ -1,4 +1,3 @@
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
