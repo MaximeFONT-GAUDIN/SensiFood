@@ -83,4 +83,37 @@ class ApiService {
       return 'Erreur lors de la connexion : $e';
     }
   }
+
+  Future<Map<String, dynamic>?> fetchProductInfo(String barcode) async {
+    try {
+      // Récupérer le jeton d'authentification depuis les préférences partagées
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token manquant');
+      }
+
+      final response = await http.get(
+        Uri.parse('$apiUrl/product/$barcode'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Impression de débogage
+      print('Réponse de l\'API : ${response.statusCode}');
+      print('Corps de la réponse : ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erreur lors de l\'appel API : $e');
+      return null;
+    }
+  }
 }

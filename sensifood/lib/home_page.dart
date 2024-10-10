@@ -14,7 +14,7 @@ class _HomePageState extends State<HomePage> {
   // Liste des écrans associés à chaque élément de la barre de navigation
   static final List<Widget> _widgetOptions = <Widget>[
     const MenuScreen(),
-    const ScannerScreen(),
+    ScannerScreen(),
     const SuiviScreen(),
     const ProfilScreen(),
     const PlusScreen(),
