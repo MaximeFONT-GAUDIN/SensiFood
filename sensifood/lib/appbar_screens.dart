@@ -175,7 +175,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scanner de Code-Barres'),
+        title: const Text('Scanner de Code-Barres'),
       ),
       body: Center(
         child: Column(
@@ -183,12 +183,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: <Widget>[
             Text(
               'Résultat du scan : $barcode',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: scanBarcode,
-              child: Text('Scanner un Code-Barres'),
+              child: const Text('Scanner un Code-Barres'),
             ),
           ],
         ),
