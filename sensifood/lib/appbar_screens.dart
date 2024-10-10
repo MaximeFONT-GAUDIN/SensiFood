@@ -1,6 +1,7 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -173,13 +174,53 @@ class _MenuScreenState extends State<MenuScreen> {
   }
 }
 
-class ScannerScreen extends StatelessWidget {
+class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 
   @override
+  _ScannerScreenState createState() => _ScannerScreenState();
+}
+
+class _ScannerScreenState extends State<ScannerScreen> {
+  String barcode = "";
+
+  Future<void> scanBarcode() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SimpleBarcodeScannerPage(),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        barcode = result;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Ceci est l\'écran Scanner', style: TextStyle(fontSize: 24)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scanner de Code-Barres'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Résultat du scan : $barcode',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: scanBarcode,
+              child: Text('Scanner un Code-Barres'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
