@@ -67,10 +67,12 @@ class ApiService {
         final jsonData = jsonDecode(responseData);
 
         String token = jsonData['access_token'];
+        String name = jsonData['user']['name'];
 
         // Sauvegarde du token dans SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        await prefs.setString('name', name);
 
         return 'success';
       } else {

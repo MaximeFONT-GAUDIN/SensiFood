@@ -1,9 +1,31 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
 
+  @override
+  _MenuScreenState createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName(); // Charger le nom de l'utilisateur au démarrage du widget
+  }
+
+  // Fonction pour récupérer le nom de l'utilisateur à partir de SharedPreferences
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('name') ?? 'Invité'; // Récupère le nom stocké, ou 'Invité' si null
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -12,8 +34,8 @@ class MenuScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // Aligne le contenu à gauche
           children: [
-            const Text(
-              'Bienvenue Louise',
+            Text(
+              'Bienvenue ${userName?.split(' ')[0] ?? '...'}',
               style: TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 16.0), // Espacement entre le titre et la barre de recherche
