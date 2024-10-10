@@ -35,7 +35,7 @@ class ApiService {
         );
         return "success";
       } else {
-        return "'Response body: ${json}'";
+        return "'Response body: $json}'";
       }
     } catch (e) {
       throw Exception('Failed to register user: $e');
