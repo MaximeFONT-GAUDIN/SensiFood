@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sensifood/auth_pages.dart';
 
 class ApiService {
-  static const String apiUrl = 'http://10.0.2.2:3000'; // Remplace par ton URL d'API
+  static const String apiUrl = 'http://192.168.9.5:3000'; // Remplace par ton URL d'API
 
   // Fonction pour créer un utilisateur
   Future<String> registerUser(BuildContext context, String email, String password, String name) async {
@@ -35,7 +35,7 @@ class ApiService {
         );
         return "success";
       } else {
-        return "'Response body: ${json}'";
+        return "'${json['message']}'";
       }
     } catch (e) {
       throw Exception('Failed to register user: $e');
@@ -67,10 +67,12 @@ class ApiService {
         final jsonData = jsonDecode(responseData);
 
         String token = jsonData['access_token'];
+        String name = jsonData['user']['name'];
 
         // Sauvegarde du token dans SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
+        await prefs.setString('name', name);
 
         return 'success';
       } else {

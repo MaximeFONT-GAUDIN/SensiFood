@@ -1,9 +1,32 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
-class MenuScreen extends StatelessWidget {
+class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
 
+  @override
+  _MenuScreenState createState() => _MenuScreenState();
+}
+
+class _MenuScreenState extends State<MenuScreen> {
+  String? userName;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadUserName(); // Charger le nom de l'utilisateur au démarrage du widget
+  }
+
+  // Fonction pour récupérer le nom de l'utilisateur à partir de SharedPreferences
+  Future<void> _loadUserName() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      userName = prefs.getString('name') ?? 'Invité'; // Récupère le nom stocké, ou 'Invité' si null
+    });
+  }
+  
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -12,9 +35,9 @@ class MenuScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // Aligne le contenu à gauche
           children: [
-            const Text(
-              'Bienvenue Louise',
-              style: TextStyle(fontSize: 24),
+            Text(
+              'Bienvenue ${userName?.split(' ')[0] ?? '...'}',
+              style: const TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 16.0), // Espacement entre le titre et la barre de recherche
             TextField(
@@ -35,59 +58,65 @@ class MenuScreen extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 16.0), // Espacement avant le graphique
-            Row(
-              children: [
-                // Graphique camembert
-                Expanded(
-                  flex: 2,
-                  child: AspectRatio(
-                    aspectRatio: 1, // Rend le graphique camembert carré
-                    child: PieChart(
-                      PieChartData(
-                        sections: showingSections(), // Les sections du camembert
-                        borderData: FlBorderData(show: false),
-                        centerSpaceRadius: 40, // Espace au centre
-                        sectionsSpace: 4, // Espace entre les sections
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0), // Espacement entre le graphique et la légende
-                // Légende à côté du graphique
-                const Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Indicator(
-                        color: Color(0xFFE0795D),
-                        text: 'Pollen',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFE79B85),
-                        text: 'Arrachides',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFEFBCAE),
-                        text: 'Asthme',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFF7DED6),
-                        text: 'Autre',
-                        isSquare: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            
+            
+            
+            // Row(
+            //   children: [
+            //     // Graphique camembert
+            //     Expanded(
+            //       flex: 2,
+            //       child: AspectRatio(
+            //         aspectRatio: 1, // Rend le graphique camembert carré
+            //         child: PieChart(
+            //           PieChartData(
+            //             sections: showingSections(), // Les sections du camembert
+            //             borderData: FlBorderData(show: false),
+            //             centerSpaceRadius: 40, // Espace au centre
+            //             sectionsSpace: 4, // Espace entre les sections
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(width: 16.0), // Espacement entre le graphique et la légende
+            //     // Légende à côté du graphique
+            //     const Expanded(
+            //       flex: 1,
+            //       child: Column(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: <Widget>[
+            //           Indicator(
+            //             color: Color(0xFFE0795D),
+            //             text: 'Pollen',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFE79B85),
+            //             text: 'Arrachides',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFEFBCAE),
+            //             text: 'Asthme',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFF7DED6),
+            //             text: 'Autre',
+            //             isSquare: true,
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
+
+            
           ],
         ),
       ),
@@ -145,13 +174,53 @@ class MenuScreen extends StatelessWidget {
   }
 }
 
-class ScannerScreen extends StatelessWidget {
+class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
 
   @override
+  _ScannerScreenState createState() => _ScannerScreenState();
+}
+
+class _ScannerScreenState extends State<ScannerScreen> {
+  String barcode = "";
+
+  Future<void> scanBarcode() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SimpleBarcodeScannerPage(),
+      ),
+    );
+
+    if (result != null) {
+      setState(() {
+        barcode = result;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Ceci est l\'écran Scanner', style: TextStyle(fontSize: 24)),
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Scanner de Code-Barres'),
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Résultat du scan : $barcode',
+              style: TextStyle(fontSize: 24),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: scanBarcode,
+              child: Text('Scanner un Code-Barres'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
