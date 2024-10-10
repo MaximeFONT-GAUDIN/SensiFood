@@ -23,6 +23,7 @@ if (flutterVersionName == null) {
 }
 
 android {
+    compileSdkVersion 35
     namespace "com.example.sensifood"
     compileSdk flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
