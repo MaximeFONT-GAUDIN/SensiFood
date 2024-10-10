@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:sensifood/home_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sensifood/home_page.dart';
 import 'package:sensifood/auth_pages.dart';
 
 class ApiService {
-  static const String apiUrl = 'http://192.168.9.5:3000'; // Remplace par ton URL d'API
+  static const String apiUrl = 'http://10.0.2.2:3000'; // Remplace par ton URL d'API
 
   // Fonction pour créer un utilisateur
   Future<String> registerUser(BuildContext context, String email, String password, String name) async {
@@ -43,7 +43,7 @@ class ApiService {
   }
 
   // Fonction pour connecter un utilisateur et récupérer le token
-  Future<String?> loginUser(BuildContext context, email, String password) async {
+  Future<String?> loginUser(BuildContext context, String email, String password) async {
     var headers = {'Content-Type': 'application/json'};
 
     var request = http.Request('POST', Uri.parse('$apiUrl/auth/signin'));
@@ -58,25 +58,37 @@ class ApiService {
       http.StreamedResponse response = await request.send();
 
       if (response.statusCode == 201) {
-        Navigator.pushAndRemoveUntil(context, 
-          MaterialPageRoute(builder: (context) => const HomePage()),
-          (Route<dynamic> route) => route.isFirst,
-        );
-        // La connexion a réussi, on récupère le token
         final responseData = await response.stream.bytesToString();
         final jsonData = jsonDecode(responseData);
 
         String token = jsonData['access_token'];
         String name = jsonData['user']['name'];
+        List<dynamic> allergens = jsonData['user']['allergens'];
 
-        // Sauvegarde du token dans SharedPreferences
+        // Extraire les noms des allergènes
+        List<String> allergenNames = [];
+        if (allergens.isNotEmpty) {
+          for (var allergen in allergens) {
+            allergenNames.add(allergen['name']);
+          }
+        }
+
+        // Sauvegarder les données utilisateur dans SharedPreferences
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('token', token);
         await prefs.setString('name', name);
+        await prefs.setString('email', email);
+        await prefs.setStringList('allergens', allergenNames);  // Sauvegarder les allergènes sous forme de liste de chaînes
+
+        // Rediriger vers la page d'accueil après connexion
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+          (Route<dynamic> route) => false,
+        );
 
         return 'success';
       } else {
-        // Si la connexion échoue, on retourne le message d'erreur
         return response.reasonPhrase ?? 'Erreur inconnue';
       }
     } catch (e) {

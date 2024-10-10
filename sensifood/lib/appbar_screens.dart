@@ -1,7 +1,6 @@
-import 'package:fl_chart/fl_chart.dart';
+import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -12,32 +11,35 @@ class MenuScreen extends StatefulWidget {
 
 class _MenuScreenState extends State<MenuScreen> {
   String? userName;
+  List<String> allergens = []; // Liste pour stocker les allergènes
 
   @override
   void initState() {
     super.initState();
-    _loadUserName(); // Charger le nom de l'utilisateur au démarrage du widget
+    _loadUserData(); // Charger les données utilisateur et allergènes
   }
 
-  // Fonction pour récupérer le nom de l'utilisateur à partir de SharedPreferences
-  Future<void> _loadUserName() async {
+  // Fonction pour récupérer les données utilisateur et allergènes à partir de SharedPreferences
+  Future<void> _loadUserData() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
       userName = prefs.getString('name') ?? 'Invité'; // Récupère le nom stocké, ou 'Invité' si null
+      allergens = prefs.getStringList('allergens') ?? []; // Récupère la liste des allergènes ou une liste vide
     });
   }
-  
+
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
+    return SafeArea(
       child: Container(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start, // Aligne le contenu à gauche
+          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             Text(
               'Bienvenue ${userName?.split(' ')[0] ?? '...'}',
-              style: const TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 35, fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 16.0), // Espacement entre le titre et la barre de recherche
             TextField(
@@ -54,125 +56,69 @@ class _MenuScreenState extends State<MenuScreen> {
               padding: EdgeInsets.only(top: 16.0),
               child: Text(
                 'Mon Tableau de bord',
-                style: TextStyle(fontSize: 20),
+                style: TextStyle(fontSize: 30, fontWeight: FontWeight.w500),
               ),
             ),
-            const SizedBox(height: 16.0), // Espacement avant le graphique
-            
-            
-            
-            // Row(
-            //   children: [
-            //     // Graphique camembert
-            //     Expanded(
-            //       flex: 2,
-            //       child: AspectRatio(
-            //         aspectRatio: 1, // Rend le graphique camembert carré
-            //         child: PieChart(
-            //           PieChartData(
-            //             sections: showingSections(), // Les sections du camembert
-            //             borderData: FlBorderData(show: false),
-            //             centerSpaceRadius: 40, // Espace au centre
-            //             sectionsSpace: 4, // Espace entre les sections
-            //           ),
-            //         ),
-            //       ),
-            //     ),
-            //     const SizedBox(width: 16.0), // Espacement entre le graphique et la légende
-            //     // Légende à côté du graphique
-            //     const Expanded(
-            //       flex: 1,
-            //       child: Column(
-            //         mainAxisAlignment: MainAxisAlignment.center,
-            //         crossAxisAlignment: CrossAxisAlignment.start,
-            //         children: <Widget>[
-            //           Indicator(
-            //             color: Color(0xFFE0795D),
-            //             text: 'Pollen',
-            //             isSquare: true,
-            //           ),
-            //           SizedBox(height: 8),
-            //           Indicator(
-            //             color: Color(0xFFE79B85),
-            //             text: 'Arrachides',
-            //             isSquare: true,
-            //           ),
-            //           SizedBox(height: 8),
-            //           Indicator(
-            //             color: Color(0xFFEFBCAE),
-            //             text: 'Asthme',
-            //             isSquare: true,
-            //           ),
-            //           SizedBox(height: 8),
-            //           Indicator(
-            //             color: Color(0xFFF7DED6),
-            //             text: 'Autre',
-            //             isSquare: true,
-            //           ),
-            //         ],
-            //       ),
-            //     ),
-            //   ],
-            // ),
+            const Padding(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
+                'Mes allergies',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+            ),
+            const SizedBox(height: 16.0), // Espacement avant d'afficher les allergènes
 
-
-            
+            // Affichage des allergènes deux par deux
+            allergens.isNotEmpty
+                ? Column(
+                    children: _buildAllergenRows(context), // Générer les lignes d'allergènes
+                  )
+                : const Text('Aucun allergène trouvé', style: TextStyle(fontSize: 16)),
           ],
         ),
       ),
     );
   }
 
-  // Méthode pour configurer les sections du graphique camembert
-  List<PieChartSectionData> showingSections() {
-    return [
-      PieChartSectionData(
-        color: const Color(0xFFE0795D),
-        value: 40, // Valeur en pourcentage
-        title: '40%', // Label
-        radius: 50, // Taille de la part
-        titleStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
+  // Fonction pour créer les lignes de deux allergènes
+  List<Widget> _buildAllergenRows(BuildContext context) {
+    List<Widget> rows = [];
+    for (int i = 0; i < allergens.length; i += 2) {
+      rows.add(
+        Row(
+          children: [
+            Expanded(
+              flex: 1, // Première colonne pour l'allergène aligné à gauche
+              child: Text(
+                allergens[i],
+                style: const TextStyle(fontSize: 20),
+                textAlign: TextAlign.start, // Aligner à gauche
+              ),
+            ),
+            // const Spacer(flex: 1), // Espace entre les deux allergènes
+            // Espace contrôlé entre les deux allergènes
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 1, // Deuxième colonne pour l'allergène centré
+              child: i + 1 < allergens.length // Vérifier s'il y a un deuxième allergène à afficher
+                  ? Text(
+                      allergens[i + 1],
+                      style: const TextStyle(fontSize: 16),
+                      textAlign: TextAlign.center, // Aligner au centre
+                    )
+                  : Container(), // Si pas de deuxième allergène, on met un conteneur vide
+            ),
+          ],
         ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xFFE79B85),
-        value: 30,
-        title: '30%',
-        radius: 50,
-        titleStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xFFEFBCAE),
-        value: 20,
-        title: '20%',
-        radius: 50,
-        titleStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-      PieChartSectionData(
-        color: const Color(0xFFF7DED6),
-        value: 10,
-        title: '10%',
-        radius: 50,
-        titleStyle: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.bold,
-          color: Colors.white,
-        ),
-      ),
-    ];
+      );
+      rows.add(const SizedBox(height: 16)); // Espacement vertical entre les lignes
+    }
+    return rows;
   }
 }
+
+
+
 
 class ScannerScreen extends StatefulWidget {
   const ScannerScreen({super.key});
@@ -203,7 +149,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Scanner de Code-Barres'),
+        title: const Text('Scanner de Code-Barres'),
       ),
       body: Center(
         child: Column(
@@ -211,12 +157,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: <Widget>[
             Text(
               'Résultat du scan : $barcode',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: scanBarcode,
-              child: Text('Scanner un Code-Barres'),
+              child: const Text('Scanner un Code-Barres'),
             ),
           ],
         ),
