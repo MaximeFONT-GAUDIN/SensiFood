@@ -36,7 +36,7 @@ class _MenuScreenState extends State<MenuScreen> {
           children: [
             Text(
               'Bienvenue ${userName?.split(' ')[0] ?? '...'}',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
             const SizedBox(height: 16.0), // Espacement entre le titre et la barre de recherche
             TextField(
@@ -57,59 +57,65 @@ class _MenuScreenState extends State<MenuScreen> {
               ),
             ),
             const SizedBox(height: 16.0), // Espacement avant le graphique
-            Row(
-              children: [
-                // Graphique camembert
-                Expanded(
-                  flex: 2,
-                  child: AspectRatio(
-                    aspectRatio: 1, // Rend le graphique camembert carré
-                    child: PieChart(
-                      PieChartData(
-                        sections: showingSections(), // Les sections du camembert
-                        borderData: FlBorderData(show: false),
-                        centerSpaceRadius: 40, // Espace au centre
-                        sectionsSpace: 4, // Espace entre les sections
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16.0), // Espacement entre le graphique et la légende
-                // Légende à côté du graphique
-                const Expanded(
-                  flex: 1,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Indicator(
-                        color: Color(0xFFE0795D),
-                        text: 'Pollen',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFE79B85),
-                        text: 'Arrachides',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFEFBCAE),
-                        text: 'Asthme',
-                        isSquare: true,
-                      ),
-                      SizedBox(height: 8),
-                      Indicator(
-                        color: Color(0xFFF7DED6),
-                        text: 'Autre',
-                        isSquare: true,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            
+            
+            
+            // Row(
+            //   children: [
+            //     // Graphique camembert
+            //     Expanded(
+            //       flex: 2,
+            //       child: AspectRatio(
+            //         aspectRatio: 1, // Rend le graphique camembert carré
+            //         child: PieChart(
+            //           PieChartData(
+            //             sections: showingSections(), // Les sections du camembert
+            //             borderData: FlBorderData(show: false),
+            //             centerSpaceRadius: 40, // Espace au centre
+            //             sectionsSpace: 4, // Espace entre les sections
+            //           ),
+            //         ),
+            //       ),
+            //     ),
+            //     const SizedBox(width: 16.0), // Espacement entre le graphique et la légende
+            //     // Légende à côté du graphique
+            //     const Expanded(
+            //       flex: 1,
+            //       child: Column(
+            //         mainAxisAlignment: MainAxisAlignment.center,
+            //         crossAxisAlignment: CrossAxisAlignment.start,
+            //         children: <Widget>[
+            //           Indicator(
+            //             color: Color(0xFFE0795D),
+            //             text: 'Pollen',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFE79B85),
+            //             text: 'Arrachides',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFEFBCAE),
+            //             text: 'Asthme',
+            //             isSquare: true,
+            //           ),
+            //           SizedBox(height: 8),
+            //           Indicator(
+            //             color: Color(0xFFF7DED6),
+            //             text: 'Autre',
+            //             isSquare: true,
+            //           ),
+            //         ],
+            //       ),
+            //     ),
+            //   ],
+            // ),
+
+
+            
           ],
         ),
       ),
