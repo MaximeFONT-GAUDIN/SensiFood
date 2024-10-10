@@ -1,6 +1,8 @@
 import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:barcode_scan2/barcode_scan2.dart';
+import 'package:sensifood/services/api_service.dart';
 
 class MenuScreen extends StatefulWidget {
   const MenuScreen({super.key});
@@ -121,27 +123,39 @@ class _MenuScreenState extends State<MenuScreen> {
 
 
 class ScannerScreen extends StatefulWidget {
-  const ScannerScreen({super.key});
-
   @override
   _ScannerScreenState createState() => _ScannerScreenState();
 }
 
 class _ScannerScreenState extends State<ScannerScreen> {
-  String barcode = "";
+  String barcode = '';
+  Map<String, dynamic>? productInfo;
+  final ApiService apiService = ApiService();
 
   Future<void> scanBarcode() async {
-    final result = await Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const SimpleBarcodeScannerPage(),
-      ),
-    );
-
-    if (result != null) {
+    try {
+      var result = await BarcodeScanner.scan();
       setState(() {
-        barcode = result;
+        barcode = result.rawContent;
       });
+
+      // Impression de débogage
+      print('Code-barres scanné : $barcode');
+
+      // Appel à l'API pour récupérer les informations du produit
+      productInfo = await apiService.fetchProductInfo(barcode);
+
+      // Impression de débogage
+      print('Informations du produit : $productInfo');
+
+      setState(() {});
+    } catch (e) {
+      setState(() {
+        barcode = 'Erreur de scan: $e';
+      });
+
+      // Impression de débogage
+      print('Erreur lors du scan : $e');
     }
   }
 
@@ -149,7 +163,7 @@ class _ScannerScreenState extends State<ScannerScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Scanner de Code-Barres'),
+        title: const Text('Scanner'),
       ),
       body: Center(
         child: Column(
@@ -157,9 +171,27 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: <Widget>[
             Text(
               'Résultat du scan : $barcode',
-              style: const TextStyle(fontSize: 24),
+              style: TextStyle(fontSize: 24),
             ),
-            const SizedBox(height: 20),
+            SizedBox(height: 20),
+            productInfo != null
+                ? Column(
+                    children: [
+                      Text(
+                        'Nom du produit : ${productInfo!['name']}',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        'Prix : ${productInfo!['price']}',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  )
+                : Text(
+                    'Produit non trouvé',
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
+            SizedBox(height: 20),
             ElevatedButton(
               onPressed: scanBarcode,
               child: const Text('Scanner un Code-Barres'),
