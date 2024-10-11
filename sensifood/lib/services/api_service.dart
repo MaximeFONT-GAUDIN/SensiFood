@@ -6,7 +6,7 @@ import 'package:sensifood/home_page.dart';
 import 'package:sensifood/auth_pages.dart';
 
 class ApiService {
-  static const String apiUrl = 'http://localhost:3000'; // Remplace par ton URL d'API
+  static const String apiUrl = 'http://10.0.2.2:3000'; // Remplace par ton URL d'API
 
   // Fonction pour créer un utilisateur
   Future<String> registerUser(BuildContext context, String email, String password, String name) async {
