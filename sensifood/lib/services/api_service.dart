@@ -6,7 +6,7 @@ import 'package:sensifood/home_page.dart';
 import 'package:sensifood/auth_pages.dart';
 
 class ApiService {
-  static const String apiUrl = 'http://10.0.2.2:3000'; // Remplace par ton URL d'API
+  static const String apiUrl = 'http://192.168.100.81:3000'; // Remplace par ton URL d'API
 
   // Fonction pour créer un utilisateur
   Future<String> registerUser(BuildContext context, String email, String password, String name) async {
@@ -126,6 +126,121 @@ class ApiService {
     } catch (e) {
       print('Erreur lors de l\'appel API : $e');
       return null;
+    }
+  }
+// Fonction pour récupérer les informations du produit
+  Future<Map<String, dynamic>?> getProductInfo(String barcode) async {
+    try {
+      // Récupérer le jeton d'authentification depuis les préférences partagées
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+
+      if (token == null) {
+        throw Exception('Token manquant');
+      }
+
+      final response = await http.get(
+        Uri.parse('$apiUrl/product/$barcode'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+
+      // Impression de débogage
+      print('Réponse de l\'API : ${response.statusCode}');
+      print('Corps de la réponse : ${response.body}');
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else {
+        return null;
+      }
+    } catch (e) {
+      print('Erreur lors de l\'appel API : $e');
+      return null;
+    }
+  }
+
+  // Fonction pour récupérer les recettes
+  Future<List<dynamic>> getReceipts() async {
+    var headers = {'Content-Type': 'application/json'};
+
+    var request = http.Request('POST', Uri.parse('$apiUrl/product/receipt'));
+    request.headers.addAll(headers);
+
+    try {
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseData);
+
+        // Ajout d'une instruction de débogage pour imprimer les données de réponse
+        print('Response Data: $jsonData');
+
+        return jsonData['receipts'];
+      } else {
+        throw Exception('Failed to fetch receipts');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch receipts: $e');
+    }
+  }
+
+  // Fonction pour récupérer les informations des recettes alternatives
+  Future<List<dynamic>> getAlternativeReceipts() async {
+    var headers = {'Content-Type': 'application/json'};
+
+    // Récupérer le jeton d'authentification depuis les préférences partagées
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    String? token = prefs.getString('token');
+
+    if (token == null) {
+      throw Exception('Token manquant');
+    }
+
+    headers['Authorization'] = 'Bearer $token';
+
+    var request = http.Request('POST', Uri.parse('$apiUrl/product/alternative'));
+    request.headers.addAll(headers);
+
+    try {
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseData);
+
+        return jsonData['alternatives'];
+      } else {
+        throw Exception('Failed to fetch alternative receipts');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch alternative receipts: $e');
+    }
+  }
+  
+  // Fonction pour récupérer les informations sur les allergies des utilisateurs
+  Future<List<dynamic>> getUserAllergens() async {
+    var headers = {'Content-Type': 'application/json'};
+
+    var request = http.Request('POST', Uri.parse('$apiUrl/user/allergens'));
+    request.headers.addAll(headers);
+
+    try {
+      http.StreamedResponse response = await request.send();
+
+      if (response.statusCode == 200) {
+        final responseData = await response.stream.bytesToString();
+        final jsonData = jsonDecode(responseData);
+
+        return jsonData['allergens'];
+      } else {
+        throw Exception('Failed to fetch user allergens');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch user allergens: $e');
     }
   }
 }

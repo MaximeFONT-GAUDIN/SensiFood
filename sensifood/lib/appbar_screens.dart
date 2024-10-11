@@ -129,14 +129,14 @@ class ScannerScreen extends StatefulWidget {
 class _ScannerScreenState extends State<ScannerScreen> {
   String barcode = '';
   Map<String, dynamic>? productInfo;
+  List<dynamic>? receipts;
   final ApiService apiService = ApiService();
 
   Future<void> scanBarcode() async {
     try {
-      var result = await BarcodeScanner.scan();
-      setState(() {
-        barcode = result.rawContent;
-      });
+      // Simuler le code-barres scanné
+      barcode = '8000500310427';
+      setState(() {});
 
       // Impression de débogage
       print('Code-barres scanné : $barcode');
@@ -146,6 +146,12 @@ class _ScannerScreenState extends State<ScannerScreen> {
 
       // Impression de débogage
       print('Informations du produit : $productInfo');
+
+      // Appel à l'API pour récupérer les recettes
+      receipts = await apiService.getReceipts();
+
+      // Impression de débogage
+      print('Recettes : $receipts');
 
       setState(() {});
     } catch (e) {
@@ -164,43 +170,60 @@ class _ScannerScreenState extends State<ScannerScreen> {
       appBar: AppBar(
         title: const Text('Scanner'),
       ),
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            Text(
-              'Résultat du scan : $barcode',
-              style: TextStyle(fontSize: 24),
-            ),
-            SizedBox(height: 20),
-            productInfo != null
-                ? Column(
-                    children: [
-                      Text(
-                        'Nom du produit : ${productInfo!['name']}',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        'Prix : ${productInfo!['price']}',
-                        style: TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  )
-                : Text(
-                    'Produit non trouvé',
-                    style: TextStyle(fontSize: 18, color: Colors.red),
-                  ),
-            SizedBox(height: 20),
-            ElevatedButton(
+      body: Column(
+        children: <Widget>[
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: ElevatedButton(
               onPressed: scanBarcode,
-              child: const Text('Scanner un Code-Barres'),
+              child: Text('Scanner un nouveau produit'),
             ),
-          ],
-        ),
+          ),
+          Spacer(),
+          Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                productInfo != null
+                    ? Column(
+                        children: [
+                          Image.network(
+                            productInfo!['image'],
+                            height: 200,
+                            width: 200,
+                          ),
+                          Text(
+                            'Nom du produit : ${productInfo!['name']}',
+                            style: TextStyle(fontSize: 18),
+                          ),
+                          SizedBox(height: 20),
+                          receipts != null
+                              ? Column(
+                                  children: receipts!.map((receipt) {
+                                    return Text(
+                                      'Recette : ${receipt['name']}',
+                                      style: TextStyle(fontSize: 18),
+                                    );
+                                  }).toList(),
+                                )
+                              : Container(),
+                        ],
+                      )
+                    : Text(
+                        'Produit non trouvé',
+                        style: TextStyle(fontSize: 18, color: Colors.red),
+                      ),
+                SizedBox(height: 20),
+              ],
+            ),
+          ),
+          Spacer(),
+        ],
       ),
     );
   }
 }
+
 
 class SuiviScreen extends StatelessWidget {
   const SuiviScreen({super.key});
