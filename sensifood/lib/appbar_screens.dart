@@ -1,4 +1,3 @@
-import 'package:simple_barcode_scanner/simple_barcode_scanner.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:barcode_scan2/barcode_scan2.dart';
@@ -171,27 +170,27 @@ class _ScannerScreenState extends State<ScannerScreen> {
           children: <Widget>[
             Text(
               'Résultat du scan : $barcode',
-              style: TextStyle(fontSize: 24),
+              style: const TextStyle(fontSize: 24),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             productInfo != null
                 ? Column(
                     children: [
                       Text(
                         'Nom du produit : ${productInfo!['name']}',
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                       Text(
                         'Prix : ${productInfo!['price']}',
-                        style: TextStyle(fontSize: 18),
+                        style: const TextStyle(fontSize: 18),
                       ),
                     ],
                   )
-                : Text(
+                : const Text(
                     'Produit non trouvé',
                     style: TextStyle(fontSize: 18, color: Colors.red),
                   ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             ElevatedButton(
               onPressed: scanBarcode,
               child: const Text('Scanner un Code-Barres'),
