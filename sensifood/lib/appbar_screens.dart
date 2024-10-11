@@ -153,11 +153,15 @@ class _ScannerScreenState extends State<ScannerScreen> {
       // Impression de débogage
       print('Informations du produit : $productInfo');
 
+      
+
+      print('CATEGORIEEEEEEEE: ${productInfo!['categorie']['name']}');
       // Appel à l'API pour récupérer les recettes
-      receipts = await apiService.getReceipts();
+      // receipts = await apiService.getReceipts('milk');
+      receipts = await apiService.getReceipts(productInfo!['categorie']['name']);
 
       // Impression de débogage
-      print('Recettes : $receipts');
+      // print('Recettes : $receipts');
 
       setState(() {});
     } catch (e) {
