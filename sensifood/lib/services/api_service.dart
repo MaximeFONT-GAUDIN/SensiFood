@@ -6,7 +6,7 @@ import 'package:sensifood/home_page.dart';
 import 'package:sensifood/auth_pages.dart';
 
 class ApiService {
-  static const String apiUrl = 'http://192.168.100.81:3000'; // Remplace par ton URL d'API
+  static const String apiUrl = 'http://localhost:3000'; // Remplace par ton URL d'API
 
   // Fonction pour créer un utilisateur
   Future<String> registerUser(BuildContext context, String email, String password, String name) async {
@@ -115,8 +115,8 @@ class ApiService {
       );
 
       // Impression de débogage
-      print('Réponse de l\'API : ${response.statusCode}');
-      print('Corps de la réponse : ${response.body}');
+      // print('Réponse de l\'API : ${response.statusCode}');
+      // print('Corps de la réponse : ${response.body}');
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
@@ -163,10 +163,16 @@ class ApiService {
   }
 
   // Fonction pour récupérer les recettes
-  Future<List<dynamic>> getReceipts() async {
-    var headers = {'Content-Type': 'application/json'};
+  Future<dynamic> getReceipts(String category) async {
 
-    var request = http.Request('POST', Uri.parse('$apiUrl/product/receipt'));
+              SharedPreferences prefs = await SharedPreferences.getInstance();
+      String? token = prefs.getString('token');
+    var headers =  {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        };
+
+    var request = http.Request('GET', Uri.parse('$apiUrl/product/receipt/$category'));
     request.headers.addAll(headers);
 
     try {
@@ -181,6 +187,8 @@ class ApiService {
 
         return jsonData['receipts'];
       } else {
+
+        print(response.reasonPhrase);
         throw Exception('Failed to fetch receipts');
       }
     } catch (e) {
@@ -243,4 +251,6 @@ class ApiService {
       throw Exception('Failed to fetch user allergens: $e');
     }
   }
+
+
 }
