@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:barcode_scan2/barcode_scan2.dart';
 import 'package:sensifood/services/api_service.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -75,6 +74,13 @@ class _MenuScreenState extends State<MenuScreen> {
                     children: _buildAllergenRows(context), // Générer les lignes d'allergènes
                   )
                 : const Text('Aucun allergène trouvé', style: TextStyle(fontSize: 16)),
+            const Padding(
+              padding: EdgeInsets.only(top: 16.0),
+              child: Text(
+                'Mon historique de produits',
+                style: TextStyle(fontSize: 25, fontWeight: FontWeight.w500),
+              ),
+            ),
           ],
         ),
       ),
@@ -112,7 +118,7 @@ class _MenuScreenState extends State<MenuScreen> {
           ],
         ),
       );
-      rows.add(const SizedBox(height: 16)); // Espacement vertical entre les lignes
+      rows.add(const SizedBox(height: 10)); // Espacement vertical entre les lignes
     }
     return rows;
   }
@@ -170,13 +176,6 @@ class _ScannerScreenState extends State<ScannerScreen> {
       appBar: AppBar(
         title: const Text('Scanner'),
       ),
-<<<<<<< HEAD
-      body: Column(
-        children: <Widget>[
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ElevatedButton(
-=======
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -187,29 +186,27 @@ class _ScannerScreenState extends State<ScannerScreen> {
             ),
             const SizedBox(height: 20),
             productInfo != null
-                ? Column(
-                    children: [
-                      Text(
-                        'Nom du produit : ${productInfo!['name']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                      Text(
-                        'Prix : ${productInfo!['price']}',
-                        style: const TextStyle(fontSize: 18),
-                      ),
-                    ],
-                  )
-                : const Text(
-                    'Produit non trouvé',
-                    style: TextStyle(fontSize: 18, color: Colors.red),
+              ? Column(
+                children: [
+                  Text(
+                    'Nom du produit : ${productInfo!['name']}',
+                      style: const TextStyle(fontSize: 18),
                   ),
+                  Text(
+                    'Prix : ${productInfo!['price']}',
+                    style: const TextStyle(fontSize: 18),
+                  ),
+                ],
+              )
+              : const Text(
+                'Produit non trouvé',
+                style: TextStyle(fontSize: 18, color: Colors.red),
+              ),
             const SizedBox(height: 20),
             ElevatedButton(
->>>>>>> 04a6d49f652b0efd6b163adfa995f969300e67f7
               onPressed: scanBarcode,
               child: Text('Scanner un nouveau produit'),
             ),
-          ),
           Spacer(),
           Center(
             child: Column(
@@ -249,7 +246,8 @@ class _ScannerScreenState extends State<ScannerScreen> {
             ),
           ),
           Spacer(),
-        ],
+          ],
+        ),
       ),
     );
   }
