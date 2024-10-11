@@ -170,11 +170,42 @@ class _ScannerScreenState extends State<ScannerScreen> {
       appBar: AppBar(
         title: const Text('Scanner'),
       ),
+<<<<<<< HEAD
       body: Column(
         children: <Widget>[
           Padding(
             padding: const EdgeInsets.all(16.0),
             child: ElevatedButton(
+=======
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            Text(
+              'Résultat du scan : $barcode',
+              style: const TextStyle(fontSize: 24),
+            ),
+            const SizedBox(height: 20),
+            productInfo != null
+                ? Column(
+                    children: [
+                      Text(
+                        'Nom du produit : ${productInfo!['name']}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                      Text(
+                        'Prix : ${productInfo!['price']}',
+                        style: const TextStyle(fontSize: 18),
+                      ),
+                    ],
+                  )
+                : const Text(
+                    'Produit non trouvé',
+                    style: TextStyle(fontSize: 18, color: Colors.red),
+                  ),
+            const SizedBox(height: 20),
+            ElevatedButton(
+>>>>>>> 04a6d49f652b0efd6b163adfa995f969300e67f7
               onPressed: scanBarcode,
               child: Text('Scanner un nouveau produit'),
             ),
